@@ -27,3 +27,4 @@ public class Menu {
     public void setKategori (String kategori) {}
     
 }
+
