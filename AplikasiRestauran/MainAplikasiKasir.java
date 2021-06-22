@@ -98,23 +98,19 @@ public class MainAplikasiKasir {
                     } while (jumlah_kuah > jumlah_ramen);
                     
                     //set pesanan kuah 
-                    Pesanan pesaan_kuah = new Pesanan(kuah_yang_dipilih, jumlah_kuah};
-                    pesaan_kuah.setKeterangan("Level " + level);
+                    Pesanan pesaan_kuah = new Pesanan(kuah_yang_dipilih, jumlah_kuah);
+                    pesaan_kuah.setKeterangan("Level" + level);
                     
                     //tambahkan pesanan kuah ke transaksi
                     trans.tambahPesanan(pesaan_kuah);
                     //hitung jumlah ramen yang belum dipesan kuah nya 
-                    jumlah ramen -= jumlah_kuah;
-                } 
-            while (jumlah_rameh > 0);
-                
-            } 
-        else {
+                    jumlah_ramen -= jumlah_kuah;
+                } while (jumlah_ramen > 0);
+            } else {
                 //jika keterangan tidak diisi tulis - 
                 System.out.print("Keterangan [- jika kosong]: ");
                 keterangan = input.next();
             }
-            
             //cek jika keterangan diisi selain "-" set ke pesanan
             if (!keterangan.equals("-")) {
                 pesanan.setKeterangan(keterangan);
@@ -123,13 +119,52 @@ public class MainAplikasiKasir {
             //konfirmasi, mau tambah pesanan atau tidak
             System.out.print("Tambah Pesanan lagi? [Y/N] : ");
             pesan_lagi = input.next();
-            while (pesan_lagi.equalsIgnoreCase("Y"));
-        }   
-    
-
+        }while (pesan_lagi.equalsIgnoreCase("Y"));
         
+        //cetak Struk
+        trans.cetakStruk();   
+        //hitung total harga
+        double total_pesanan = trans.hitungTotalPesanan();
+        System.out.println("============================");
+        System.out.println("Total : \t\t" + total_pesanan);
+        
+        //hitung pajak
+        //jika makan ditempat, biaya pajak = 10% ppn + 5% service
+        trans.setPajak(PAJAK_PPN);
+        double ppn = trans.hitungPajak();
+        System.out.println("Pajak 10% : \t\t" + ppn);
+        
+        double biaya_service = 0;
+        if (makan_ditempat.equalsIgnoreCase("Y")) {
+            trans.setBiayaService(BIAYA_SERVICE);
+            biaya_service = trans.hitungBiayaService();
+            System.out.println("Biaya Service 5% : \t" + biaya_service);
+        }
+        
+        //tampilkan total bayar 
+        System.out.println("Total : \t\t" + trans.hitungTotalBayar(ppn, biaya_service));
+
+        //cek yang bayar, apakah > total bayar atau tidak
+        double kembalian = 0;
+        do {
+            //ambil input uang bayar
+            double uang_bayar = app.cekInputNumber("Uang Bayar : \t\t");
+           
+            kembalian = trans.hitungKembalian(uang_bayar);
+            if (kembalian < 0) {
+                System.out.println("[Err] Uang anda kurang");
+            } else{
+                System.out.println("Kembalian : \t\t" + kembalian);
+                break;
+            }
+        } while (kembalian < 0);
+        
+        System.out.println("======== TERIMA KASIH ========");
+    }
+    
     public void generateDaftarMenu() { 
         daftarMenu = new DaftarMenu();
+        
         daftarMenu.tambahMenu(new Ramen("Ramen Seafood", 25000));
         daftarMenu.tambahMenu(new Ramen("Ramen Original", 18000));
         daftarMenu.tambahMenu(new Ramen("Ramen Vegetarian", 22000));
